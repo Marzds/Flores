@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Flores Amarillas &lt;3</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inclusive+Sans:ital@1&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            box-sizing: border-box;
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            --crema: #FFF4E1;
+            --dorado: #E3B04B;
+            --dorado-borde: #C68A2E;
+            --texto: #3B2412;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: 'Inclusive Sans', sans-serif;
+            background: var(--crema);
+            min-height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: clamp(36px, 9vw, 100px);
+            color: var(--texto);
+        }
+
+        .Con-2 {
+            display: none;
+        }
+
+        canvas {
+            display: block;
+            width: min(800px, 92vw);
+            height: auto;
+            margin: 0 auto;
+        }
+
+        .Contenedor {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px 0;
+        }
+
+        .Con {
+            display: flex;
+            place-content: center;
+            align-items: center;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .Texto {
+            display: none;
+        }
+
+        .Texto h2 {
+            font-size: clamp(24px, 6vw, 50px);
+            text-align: center;
+            color: var(--texto);
+        }
+
+        .Button{
+            font-family: monospace;
+            font-size: x-large;
+            transition-duration: 0.2s;
+            padding: 10px 18px;
+            border-radius: 8px;
+            background-color: var(--dorado);
+            color: var(--texto);
+            border: 2px solid var(--dorado-borde);
+            cursor: pointer;
+        }
+
+        .Button:hover{
+            transform: scale(1.08);
+            border-radius: 14px;
+            box-shadow: 0 10px 20px 0 rgba(139, 94, 52, 0.28);
+            color: var(--texto);
+            background-color: var(--crema);
+            border-color: var(--dorado);
+        }
+
+        .Contenedor-Binicio {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        .marca {
+            text-align: center;
+            font-family: monospace;
+            font-size: 14px;
+            letter-spacing: 2px;
+            color: #E3D2AE;
+            margin-top: 18px;
+            margin-bottom: 4px;
+        }
+
+        .Con-Emergente{
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            display: flex;
+        }
+
+        .cua{
+            display: none;
+            position: fixed;
+            top: max(20px, env(safe-area-inset-top, 0px));
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(300px, 80vw);
+            padding: 30px;
+            background-color: #FFFDF8;
+            border: 2px solid var(--dorado);
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(139, 94, 52, 0.25);
+            text-align: center;
+            animation: aparecer 0.5s ease-out;
+            color: var(--texto);
+        }
+
+        @keyframes aparecer {
+            0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            50% { opacity: 0.5; transform: translateX(-50%) translateY(-10px); }
+            100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="Contenedor-Binicio">
+        <button class="Button" id="BVer"> Presiona aquí </button>
+    </div>
+
+    <div class="Con-Emergente">
+        <div id="resultado" class="cua">
+            <p id="res">
+                Eres muy especial para mí, estas flores son para la niña
+                más preciosa del mundo. &lt;3
+            </p>
+            <button id="BotonCerrar" class="Button">Te amo</button>
+        </div>
+    </div>
+
+    <div class="Con-2">
+        <h1 id="Titulo"> Elije una Opcion </h1>
+        <div class="Con">
+            <button class="Button" id="B1"> 1 Flor </button>
+            <button class="Button" id="B12"> 12 Flores :) </button>
+        </div>
+        <p class="marca">LvdD</p>
+    </div>
+
+    <main class="Contenedor">
+        <canvas id="Flor" width="800" height="650"></canvas>
+
+        <div class="Texto">
+            <h2 id="Text">Para la niña mas Linda del Mundo.</h2>
+            <p class="marca">LvdD</p>
+        </div>
+    </main>
+
+    <script>
+    (function () {
+        // ---------- Interacción base ----------
+        document.getElementById("BVer").addEventListener('click', function () {
+            document.getElementById("resultado").style.display = "block";
+        });
+
+        document.getElementById("BotonCerrar").addEventListener('click', function () {
+            document.getElementById("resultado").style.display = "none";
+            document.querySelector(".Contenedor-Binicio").style.display = "none";
+            document.querySelector(".Con-2").style.display = "block";
+        });
+
+        let tituloOriginal = document.title;
+        window.addEventListener('blur', () => {
+            tituloOriginal = document.title;
+            document.title = "No te vallas, regresa :(";
+        });
+        window.addEventListener('focus', () => {
+            document.title = tituloOriginal;
+        });
+
+        // ---------- Canvas ----------
+        const canvas = document.getElementById('Flor');
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width, H = canvas.height;
+
+        // ---------- Utilidades de easing ----------
+        const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+        const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+        const easeOutBack = t => {
+            const c1 = 1.70158, c3 = c1 + 1;
+            return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+        };
+        const lerp = (a, b, t) => a + (b - a) * t;
+
+        // ---------- Pre-render: sprite del girasol (se dibuja UNA sola vez) ----------
+        const SPRITE = 400, SC = SPRITE / 2;
+        const NATURAL_RADIUS = 150; // radio visual "natural" del girasol en el sprite
+
+        function crearSpriteGirasol() {
+            const off = document.createElement('canvas');
+            off.width = SPRITE; off.height = SPRITE;
+            const c = off.getContext('2d');
+            c.translate(SC, SC);
+
+            function petalo(len, width, color1, color2) {
+                c.beginPath();
+                c.moveTo(0, 0);
+                c.bezierCurveTo(-width / 2, -len * 0.32, -width / 2, -len * 0.72, 0, -len);
+                c.bezierCurveTo(width / 2, -len * 0.72, width / 2, -len * 0.32, 0, 0);
+                c.closePath();
+                const g = c.createLinearGradient(0, 0, 0, -len);
+                g.addColorStop(0, color1);
+                g.addColorStop(0.55, color2);
+                g.addColorStop(1, '#FFE9A0');
+                c.fillStyle = g;
+                c.fill();
+                c.lineWidth = 1.4;
+                c.strokeStyle = 'rgba(180,110,10,0.35)';
+                c.stroke();
+            }
+
+            // Capa trasera de pétalos (más grandes, tono más profundo)
+            const outerN = 16;
+            for (let i = 0; i < outerN; i++) {
+                c.save();
+                c.rotate((i / outerN) * Math.PI * 2);
+                petalo(150, 46, '#E8940A', '#FFC93C');
+                c.restore();
+            }
+            // Capa delantera (más chicos, tono más claro, desfasados)
+            const innerN = 16;
+            for (let i = 0; i < innerN; i++) {
+                c.save();
+                c.rotate(((i + 0.5) / innerN) * Math.PI * 2);
+                petalo(104, 32, '#F5A81C', '#FFD54A');
+                c.restore();
+            }
+
+            // Centro (disco) con textura espiral tipo girasol real
+            const headR = 78;
+            const grad = c.createRadialGradient(-headR * 0.3, -headR * 0.3, headR * 0.15, 0, 0, headR);
+            grad.addColorStop(0, '#8B5E34');
+            grad.addColorStop(0.6, '#5C3A21');
+            grad.addColorStop(1, '#33200F');
+            c.beginPath();
+            c.arc(0, 0, headR, 0, Math.PI * 2);
+            c.fillStyle = grad;
+            c.fill();
+
+            const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+            const numSeeds = 260;
+            for (let i = 0; i < numSeeds; i++) {
+                const r = headR * 0.94 * Math.sqrt(i / numSeeds);
+                const theta = i * goldenAngle;
+                const sx = r * Math.cos(theta), sy = r * Math.sin(theta);
+                c.save();
+                c.translate(sx, sy);
+                c.rotate(theta);
+                c.beginPath();
+                c.ellipse(0, 0, 1.2 + r * 0.012, 2.6 + r * 0.01, 0, 0, Math.PI * 2);
+                c.fillStyle = i % 2 === 0 ? '#2E1B0F' : '#54331B';
+                c.fill();
+                c.restore();
+            }
+            // Borde y brillo suave del centro
+            c.beginPath();
+            c.arc(0, 0, headR, 0, Math.PI * 2);
+            c.strokeStyle = 'rgba(80,50,20,0.5)';
+            c.lineWidth = 2;
+            c.stroke();
+
+            return off;
+        }
+
+        function crearSpriteHoja() {
+            const off = document.createElement('canvas');
+            off.width = 140; off.height = 70;
+            const c = off.getContext('2d');
+            c.translate(2, 35);
+            c.beginPath();
+            c.moveTo(0, 0);
+            c.quadraticCurveTo(60, -26, 132, 0);
+            c.quadraticCurveTo(60, 26, 0, 0);
+            c.closePath();
+            const g = c.createLinearGradient(0, 0, 132, 0);
+            g.addColorStop(0, '#6B8E23');
+            g.addColorStop(1, '#3F5C1B');
+            c.fillStyle = g;
+            c.fill();
+            c.strokeStyle = 'rgba(40,60,10,0.4)';
+            c.lineWidth = 1.2;
+            c.stroke();
+            c.beginPath();
+            c.moveTo(6, 0);
+            c.lineTo(122, 0);
+            c.strokeStyle = 'rgba(230,240,200,0.5)';
+            c.lineWidth = 1.4;
+            c.stroke();
+            return off;
+        }
+
+        const spriteGirasol = crearSpriteGirasol();
+        const spriteHoja = crearSpriteHoja();
+
+        // ---------- Geometría auxiliar ----------
+        function puntoCuadratica(p0, p1, p2, t) {
+            const mt = 1 - t;
+            return {
+                x: mt * mt * p0.x + 2 * mt * t * p1.x + t * t * p2.x,
+                y: mt * mt * p0.y + 2 * mt * t * p1.y + t * t * p2.y
+            };
+        }
+
+        function tangenteCuadratica(p0, p1, p2, t) {
+            const dx = 2 * (1 - t) * (p1.x - p0.x) + 2 * t * (p2.x - p1.x);
+            const dy = 2 * (1 - t) * (p1.y - p0.y) + 2 * t * (p2.y - p1.y);
+            return Math.atan2(dy, dx);
+        }
+
+        // ---------- Construcción de un tallo con hojas y flor ----------
+        function crearFlor({ base, head, size, bend, rotation, delay, stemDur, bloomDur, hojas }) {
+            const control = {
+                x: (base.x + head.x) / 2 + bend,
+                y: (base.y + head.y) / 2
+            };
+            return { base, head, control, size, rotation, delay, stemDur, bloomDur, hojas, startTime: 0 };
+        }
+
+        function dibujarTalloYHojas(f, t) {
+            const N = 24;
+            ctx.beginPath();
+            for (let i = 0; i <= N; i++) {
+                const tt = (i / N) * t;
+                const p = puntoCuadratica(f.base, f.control, f.head, tt);
+                if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+            }
+            ctx.lineWidth = 4 + f.size * 0.045;
+            ctx.strokeStyle = '#5C7A28';
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            f.hojas.forEach(h => {
+                if (t < h.at - 0.06) return;
+                const popT = clamp((t - h.at) / 0.18, 0, 1);
+                const escala = easeOutBack(popT);
+                if (escala <= 0) return;
+                const pos = puntoCuadratica(f.base, f.control, f.head, Math.min(h.at, t));
+                const ang = tangenteCuadratica(f.base, f.control, f.head, Math.min(h.at, t));
+                ctx.save();
+                ctx.translate(pos.x, pos.y);
+                ctx.rotate(ang + h.lado * 0.9);
+                const s = (0.55 + f.size * 0.0035) * escala;
+                ctx.scale(h.lado, 1);
+                ctx.drawImage(spriteHoja, 0, -35, 140 * s, 70 * s);
+                ctx.restore();
+            });
+        }
+
+        function dibujarCabezaFlor(f, bloomT) {
+            const escala = (f.size / NATURAL_RADIUS) * easeOutBack(bloomT);
+            if (escala <= 0) return;
+            ctx.save();
+            ctx.translate(f.head.x, f.head.y);
+            ctx.rotate(f.rotation);
+            ctx.shadowColor = 'rgba(80,50,10,0.25)';
+            ctx.shadowBlur = 10;
+            ctx.shadowOffsetY = 4;
+            ctx.drawImage(spriteGirasol, -SC * escala, -SC * escala, SPRITE * escala, SPRITE * escala);
+            ctx.restore();
+        }
+
+        // ---------- Animación (loop único, se detiene solo al terminar) ----------
+        let flores = [];
+        let rafId = null;
+        let decoracionExtra = null; // ej: lazo del ramo
+
+        function iniciarAnimacion() {
+            if (rafId) cancelAnimationFrame(rafId);
+            const t0 = performance.now();
+            flores.forEach(f => { f.startTime = t0 + f.delay; });
+            const ordenCabezas = [...flores].sort((a, b) => a.size - b.size);
+
+            function frame(now) {
+                ctx.clearRect(0, 0, W, H);
+                let activo = false;
+
+                if (decoracionExtra) decoracionExtra();
+
+                flores.forEach(f => {
+                    const el = now - f.startTime;
+                    if (el < 0) { activo = true; return; }
+                    const stemT = clamp(el / f.stemDur, 0, 1);
+                    dibujarTalloYHojas(f, easeOutCubic(stemT));
+                    if (stemT < 1) activo = true;
+                });
+
+                ordenCabezas.forEach(f => {
+                    const el = now - f.startTime;
+                    if (el < 0) return;
+                    const bloomStart = f.stemDur * 0.55;
+                    const bloomT = clamp((el - bloomStart) / f.bloomDur, 0, 1);
+                    if (bloomT > 0) dibujarCabezaFlor(f, bloomT);
+                    if (bloomT < 1) activo = true;
+                });
+
+                if (activo) { rafId = requestAnimationFrame(frame); } else { rafId = null; }
+            }
+            rafId = requestAnimationFrame(frame);
+        }
+
+        // ---------- Construcción del ramo (12 flores), todo dentro del canvas ----------
+        function construirRamo() {
+            const flores = [];
+            const n = 12;
+            const atado = { x: W / 2, y: H - 55 };
+            const spreadDeg = 148;
+            const startDeg = 270 - spreadDeg / 2;
+            const mid = (n - 1) / 2;
+
+            for (let i = 0; i < n; i++) {
+                const t = i / (n - 1);
+                const ang = (startDeg + t * spreadDeg) * Math.PI / 180;
+                const dist = Math.abs(i - mid);
+                const stemLen = 250 - dist * 9 + (i % 2 === 0 ? 6 : -4);
+                const size = 68 - dist * 2.4 + (i % 3 === 0 ? 4 : 0);
+                const dir = { x: Math.cos(ang), y: Math.sin(ang) };
+                const head = { x: atado.x + dir.x * stemLen, y: atado.y + dir.y * stemLen };
+
+                flores.push(crearFlor({
+                    base: atado,
+                    head,
+                    size,
+                    bend: (i - mid) * 8,
+                    rotation: (i % 2 === 0 ? 1 : -1) * (3 + (i % 3)) * Math.PI / 180,
+                    delay: i * 85,
+                    stemDur: 480,
+                    bloomDur: 620,
+                    hojas: [{ at: 0.55, lado: i % 2 === 0 ? 1 : -1 }]
+                }));
+            }
+            return { flores, atado };
+        }
+
+        function dibujarListón(atado) {
+            ctx.save();
+            ctx.translate(atado.x, atado.y + 6);
+            ctx.fillStyle = '#D98B8B';
+            ctx.strokeStyle = '#B96666';
+            ctx.lineWidth = 1.5;
+            // lazos
+            [-1, 1].forEach(s => {
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.quadraticCurveTo(s * 46, -30, s * 60, 14);
+                ctx.quadraticCurveTo(s * 30, 6, 0, 0);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            });
+            // nudo central
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 16, 12, 0, 0, Math.PI * 2);
+            ctx.fillStyle = '#C97676';
+            ctx.fill();
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function construirFlorUnica() {
+            const base = { x: W / 2, y: H - 90 };
+            const head = { x: W / 2, y: 210 };
+            const flor = crearFlor({
+                base, head, size: 140, bend: 10, rotation: -0.03, delay: 0,
+                stemDur: 650, bloomDur: 750,
+                hojas: [{ at: 0.4, lado: -1 }, { at: 0.7, lado: 1 }]
+            });
+            return [flor];
+        }
+
+        document.getElementById("B1").addEventListener('click', function () {
+            document.querySelector(".Con").style.display = "none";
+            document.querySelector(".Texto").style.display = "block";
+            flores = construirFlorUnica();
+            decoracionExtra = null;
+            iniciarAnimacion();
+            document.getElementById("Titulo").remove();
+        });
+
+        document.getElementById("B12").addEventListener('click', function () {
+            document.querySelector(".Con").style.display = "none";
+            document.querySelector(".Texto").style.display = "block";
+            const ramo = construirRamo();
+            flores = ramo.flores;
+            decoracionExtra = () => dibujarListón(ramo.atado);
+            iniciarAnimacion();
+            document.getElementById("Titulo").remove();
+        });
+    })();
+    </script>
+</body>
+</html>
